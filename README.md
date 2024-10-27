@@ -1,6 +1,8 @@
 # godot-websockets
 
-A websocket example using Godot (client) and Deno (server)
+A simple websocket example using Godot (client) and Deno (server). Doesn't
+really do much but demonstrate how to connect to a websocket server and
+send/receive messages from a Godot game.
 
 ## screenshot
 
@@ -12,4 +14,4 @@ Frank Hale &lt;frankhaledevelops @ gmail.com&gt;
 
 ## Date
 
-15 September 2023
+27 October 2024
