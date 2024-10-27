@@ -9,18 +9,21 @@ interface player {
   position: Vector3;
 }
 
-const server = Deno.listen({ port: 9876 });
+const port: number = 9876;
 const players: player[] = [];
 
-for await (const conn of server) {
-  const httpConn = Deno.serveHttp(conn);
-  const e = await httpConn.nextRequest();
-  if (e) {
-    const { socket, response } = Deno.upgradeWebSocket(e.request);
+const ac = new AbortController();
+Deno.serve(
+  {
+    port,
+    signal: ac.signal,
+  },
+  (_req: Request) => {
+    const { socket, response } = Deno.upgradeWebSocket(_req);
     socket.onopen = () => {
       const p: player = {
         id: crypto.randomUUID(),
-        position: { x: 0, y: 0, z: 0 }
+        position: { x: 0, y: 0, z: 0 },
       };
       players.push(p);
       console.log(`client connected: ${p.id}`);
@@ -38,7 +41,6 @@ for await (const conn of server) {
       const otherPlayers = players.filter((p) => p.id !== e.data.id);
       socket.send(JSON.stringify(otherPlayers));
     };
-
-    e.respondWith(response);
-  }
-}
+    return response;
+  },
+);
